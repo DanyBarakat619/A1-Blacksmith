@@ -1,24 +1,82 @@
 // Assignment 1: Blacksmith — The Tiny Forge
+// Pseudocode:
+// If the forge has at least 30 heat, make one sword and remove 30 heat.
+// If the forge has less than 30 heat, do not make a sword.
+// After the attempt, update the forge display.
+// Select the page elements
 
-// PLAN: Write a short pseudocode plan for making a sword here.
+const forge = document.querySelector("#forge");
+const forgeImage = document.querySelector("#forge-image");
+const forgeStatus = document.querySelector("#forge-status");
+const heatValue = document.querySelector("#heat-value");
+const swordCount = document.querySelector("#sword-count");
+const actionMessage = document.querySelector("#action-message");
 
-// 1. Select the forge, heat, sword count, status, image, and message elements.
-//    Find their IDs in index.html.
+// State variables
+let heat = 20;
+let swordsMade = 0;
 
-// 2. Create the two state variables: heat and swords made.
+function getForgeStatus(heatValue) {
+    if (heatValue < 30) {
+        return "Too cold";
+    } else if (heatValue < 70) {
+        return "Ready to forge";
+    } else {
+        return "Roaring fire";
+    }
+}
 
-// 3. Write getForgeStatus(heatValue). Return the correct status string.
+function updateForge() {
+    const status = getForgeStatus(heat);
 
-// 4. Write updateForge(). Update text and apply one status class.
-//    Change the supplied forge image src and alt to match the heat.
-//    Keep the most recent action message visible.
+    heatValue.textContent = heat;
+    swordCount.textContent = swordsMade;
+    forgeStatus.textContent = status;
 
-// 5. Write resetForge(). Restore the state, message, and display.
+    forge.classList.remove("is-cold", "is-ready", "is-roaring");
 
-// 6. Write heatForge(amount). Add heat, cap it, and update the page.
+    if (status === "Too cold") {
+        forge.classList.add("is-cold");
+        forgeImage.src = "assets/forge-cold.svg";
+        forgeImage.alt = "A stone forge with dark coals and no flames";
+    } else if (status === "Ready to forge") {
+        forge.classList.add("is-ready");
+        forgeImage.src = "assets/forge-ready.svg";
+        forgeImage.alt = "A stone forge with a small orange fire";
+    } else {
+        forge.classList.add("is-roaring");
+        forgeImage.src = "assets/forge-roaring.svg";
+        forgeImage.alt = "A stone forge with tall bright flames and sparks";
+    }
+}
 
-// 7. Write makeSword(). Handle both success and insufficient heat.
+function resetForge() {
+    heat = 20;
+    swordsMade = 0;
+    actionMessage.textContent = "Welcome to the forge. Add heat to begin.";
+    updateForge();
+}
 
-// 8. Call resetForge() once to start the game.
 
-// Use the tests in ASSIGNMENT.md to check your work.
+function heatForge(amount) {
+    heat += amount;
+
+    if (heat > 100) {
+        heat = 100;
+    }
+
+    actionMessage.textContent = "The forge has been heated.";
+    updateForge();
+}
+function makeSword() {
+    if (heat >= 30) {
+        heat -= 30;
+        swordsMade += 1;
+        actionMessage.textContent = "You made a sword!";
+    } else {
+        actionMessage.textContent = "The forge is too cold. You need more heat.";
+    }
+
+    updateForge();
+}
+resetForge();
